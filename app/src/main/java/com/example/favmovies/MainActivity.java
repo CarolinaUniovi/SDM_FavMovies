@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
@@ -11,14 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
-    /*
-    TODO:
-     1: validar los campos -> para guardar es obligatorio que los campos estén rellenados.
-     2: layout de editar categoria -> nombre label y edittxt, descripcion label y editTxt
-            y botón de cancel y ok.
-     */
     Snackbar msgCreaCategoria;
 
     @Override
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.layoutPrincipal),
                                         R.string.msg_accion_realizada, Snackbar.LENGTH_LONG)
                                 .show();
-                        modificarCategoria();
+                        showModificarCategoria();
                     }
                 });
 
@@ -61,11 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void modificarCategoria() {
-
+    private void showModificarCategoria() {
         Intent categoriaIntent = new Intent(MainActivity.this, CategoryActivity.class);
         startActivity(categoriaIntent);
-
     }
 
     private void initBtnGuardar() {
@@ -73,9 +69,20 @@ public class MainActivity extends AppCompatActivity {
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
-                                Snackbar.LENGTH_LONG)
-                        .show();
+                if (isAllFilled()) {
+                    Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
+                                    Snackbar.LENGTH_LONG)
+                            .show();
+                }
+            }
+
+            private boolean isAllFilled() {
+                List<EditText> lista = new ArrayList<>();
+                lista.add(findViewById(R.id.etxtTitulo));
+                lista.add(findViewById(R.id.etxtArgumento));
+                lista.add(findViewById(R.id.etxtDuracion));
+                lista.add(findViewById(R.id.etxtDate));
+                return lista.stream().allMatch(l -> !l.getText().toString().isEmpty());
             }
         });
     }

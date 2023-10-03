@@ -21,4 +21,5 @@
     <string name="btnCancel">Cancel</string>
     <string name="btnOk">Ok</string>
     <string name="tituloCat">Creación de nueva categoría</string>
+    <string name="tituloActivityCategory">Edita una categoría</string>
 </resources>
