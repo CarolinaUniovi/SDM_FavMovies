@@ -22,4 +22,7 @@
     <string name="btnOk">Ok</string>
     <string name="tituloCat">Creación de nueva categoría</string>
     <string name="tituloActivityCategory">Edita una categoría</string>
+    <string name="msg_error">Completa todos los campos</string>
+    <string name="fechaestreno">26/08/2020</string>
+    <string name="titulopeli">Tenet</string>
 </resources>
