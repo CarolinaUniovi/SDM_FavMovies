@@ -25,4 +25,8 @@
     <string name="msg_error">Completa todos los campos</string>
     <string name="fechaestreno">26/08/2020</string>
     <string name="titulopeli">Tenet</string>
+    <string name="subject_compartir">Te comparto la siguiente peli:</string>
+    <string name="modificacionCategoria">Modificando una categoria</string>
+    <string name="comprueba_conexion">Comprueba la conexión</string>
+    <string name="Compartir">Compartir</string>
 </resources>

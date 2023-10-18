@@ -45,4 +45,8 @@ public class Categoria implements Parcelable {
     public String getNombre() {
         return nombre;
     }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
 }

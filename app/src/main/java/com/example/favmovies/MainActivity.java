@@ -3,26 +3,44 @@ package com.example.favmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.favmovies.modelo.Categoria;
 import com.example.favmovies.modelo.Pelicula;
+import com.example.favmovies.util.Conexion;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String POS_CATEGORIA_SELECCIONADA = " ";
+    public static final int GESTION_CATEGORIA = 1;
+    public static final String CATEGORIA_SELECCIONADA = "categoria_seleccionada";
+    public static final String CATEGORIA_MODIFICADA = "categoria_modificada";
+
     private final List<Categoria> listaCategorias = new ArrayList<>();
     private Snackbar msgCreaCategoria;
     private Spinner spCategoria;
+    private Button btnGuardar;
+    private EditText etxtTitulo;
+    private EditText etxtArgumento;
+    private EditText etxtDuracion;
+    private EditText etxtDate;
+    private ImageButton btnEdit;
+    private boolean creandoCategoria = false;
+    private Pelicula pelicula;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +53,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         spCategoria = findViewById(R.id.spCategoria);
+        btnGuardar = findViewById(R.id.btnGuardar);
+        etxtTitulo = findViewById(R.id.etxtTitulo);
+        etxtArgumento = findViewById(R.id.etxtArgumento);
+        etxtDuracion = findViewById(R.id.etxtDuracion);
+        etxtDate = findViewById(R.id.etxtDate);
+        btnEdit = findViewById(R.id.btnEditCategoria);
         crearLista();
         introListaSpinner();
+
         Intent intentPeli = getIntent();
         Pelicula pelicula = intentPeli.getParcelableExtra(MainRecycler.PELICULA_SELECCIONADA);
         if (pelicula != null)
@@ -44,6 +69,27 @@ public class MainActivity extends AppCompatActivity {
 
         initBtnGuardar();
         initbtnEditCategoria();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId()==R.id.Compartir){
+            Conexion conexion=new Conexion(getApplicationContext());
+
+            if (conexion.compruebaConexion()){
+                compartirPeli();
+            }
+            else
+                Toast.makeText(getApplicationContext(), R.string.comprueba_conexion, Toast.LENGTH_LONG).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void introListaSpinner() {
@@ -77,13 +123,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void abrirModoConsulta(Pelicula pelicula) {
-        Button btnGuardar = findViewById(R.id.btnGuardar);
-        EditText etxtTitulo = findViewById(R.id.etxtTitulo);
-        EditText etxtArgumento = findViewById(R.id.etxtArgumento);
-        EditText etxtDuracion = findViewById(R.id.etxtDuracion);
-        EditText etxtDate = findViewById(R.id.etxtDate);
-        ImageButton btnEdit = findViewById(R.id.btnEditCategoria);
-
         etxtTitulo.setText(pelicula.getTitulo());
         etxtDate.setText(pelicula.getFecha());
         etxtArgumento.setText(pelicula.getArgumento());
@@ -95,19 +134,18 @@ public class MainActivity extends AppCompatActivity {
 
         for (Categoria elemento : listaCategorias) {
             if (elemento.getNombre().equals(nombreaccion)) {
+                spCategoria.setSelection(i);
                 break;
             }
             i++;
         }
-        spCategoria.setSelection(i);
-
 
         etxtTitulo.setEnabled(false);
         etxtDate.setEnabled(false);
         etxtArgumento.setEnabled(false);
         etxtDuracion.setEnabled(false);
-        btnEdit.setVisibility(View.INVISIBLE);
-        btnGuardar.setVisibility(View.INVISIBLE);
+        btnEdit.setEnabled(false);
+        btnGuardar.setEnabled(false);
         spCategoria.setEnabled(false);
     }
 
@@ -147,29 +185,80 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initBtnGuardar() {
-        Button btnGuardar = findViewById(R.id.btnGuardar);
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isAllFilled()) {
+                if(validarCampos()){
+                    guardarPeli();
                     Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
                                     Snackbar.LENGTH_LONG)
                             .show();
-                } else {
-                    Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_error,
-                                    Snackbar.LENGTH_LONG)
-                            .show();
                 }
-            }
 
-            private boolean isAllFilled() {
-                List<EditText> lista = new ArrayList<>();
-                lista.add(findViewById(R.id.etxtTitulo));
-                lista.add(findViewById(R.id.etxtArgumento));
-                lista.add(findViewById(R.id.etxtDuracion));
-                lista.add(findViewById(R.id.etxtDate));
-                return lista.stream().allMatch(l -> !l.getText().toString().isEmpty());
             }
         });
+    }
+
+    private void guardarPeli() {
+        pelicula = new Pelicula(etxtTitulo.getText().toString(), etxtArgumento.getText().toString(),
+                listaCategorias.get(spCategoria.getSelectedItemPosition()), etxtDate.getText().toString(),
+                etxtDuracion.getText().toString());
+
+        Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
+                        Snackbar.LENGTH_LONG)
+                .show();
+        Intent intentResultado = new Intent();
+        intentResultado.putExtra(MainRecycler.PELICULA_CREADA, pelicula);
+        setResult(RESULT_OK, intentResultado);
+        finish();
+    }
+
+    private boolean validarCampos() {
+        if (etxtTitulo.getText().toString().isEmpty()) {
+            etxtTitulo.setError(getString(R.string.hintTitulo));
+            etxtTitulo.requestFocus();
+            return false;
+        }
+        if (etxtArgumento.getText().toString().isEmpty()) {
+            etxtArgumento.setError(getString(R.string.hintArgumento));
+            etxtArgumento.requestFocus();
+            return false;
+        }
+        if (etxtDuracion.getText().toString().isEmpty()) {
+            etxtDuracion.setError(getString(R.string.hintDuracion));
+            etxtDuracion.requestFocus();
+            return false;
+        }
+        if (etxtDate.getText().toString().isEmpty()) {
+            etxtDate.setError(getString(R.string.hintDate));
+            etxtDate.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void compartirPeli() {
+        if (!validarCampos()) return;
+        /* es necesario hacer un intent con la constate ACTION_SEND */
+        /*Llama a cualquier app que haga un envío*/
+        Intent itSend = new Intent(Intent.ACTION_SEND);
+        /* vamos a enviar texto plano */
+        itSend.setType("text/plain");
+        // itSend.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{para});
+        itSend.putExtra(Intent.EXTRA_SUBJECT,
+                getString(R.string.subject_compartir) + ": " + etxtTitulo.getText().toString());
+        itSend.putExtra(Intent.EXTRA_TEXT, getString(R.string.titulo)
+                +": "+etxtTitulo.getText().toString()+"\n"+
+                getString(R.string.argumento)
+                +": "+etxtArgumento.getText().toString()
+        );
+
+        /* iniciamos la actividad */
+                /* puede haber más de una aplicacion a la que hacer un ACTION_SEND,
+                   nos sale un ventana que nos permite elegir una.
+                   Si no lo pongo y no hay activity disponible, pueda dar un error */
+        Intent shareIntent=Intent.createChooser(itSend, null);
+        startActivity(shareIntent);
     }
 }

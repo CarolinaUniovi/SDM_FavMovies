@@ -29,7 +29,6 @@ public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAd
     @NonNull
     @Override
     public PeliculaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Creamos la vista con el layout para un elemento
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.linea_recycler_view_pelicula, parent, false);
         return new PeliculaViewHolder(itemView);
@@ -41,11 +40,8 @@ public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAd
      */
     @Override
     public void onBindViewHolder(@NonNull PeliculaViewHolder holder, int position) {
-        // Extrae de la lista el elemento indicado por posición
         Pelicula pelicula = listaPeliculas.get(position);
-        Log.i("Lista", "Visualiza elemento: " + pelicula);
-        // llama al método de nuestro holder para asignar valores a los componentes
-        // además, pasamos el listener del evento onClick
+
         holder.bindUser(pelicula, listener);
     }
 
@@ -75,10 +71,8 @@ public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAd
         public void bindUser(final Pelicula pelicula, final OnItemClickListener listener) {
             titulo.setText(pelicula.getTitulo() + " " + pelicula.getFecha());
             //fecha.setText(pelicula.getFecha());
-
             fecha.setText(pelicula.getCategoria().getNombre());
             // cargar imagen
-
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
