@@ -7,7 +7,20 @@
 
     <style name="Theme.FavMovies" parent="Base.Theme.FavMovies">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimary">@color/colorPrimaryDark</item>
-        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/slide_right</item>
+        <item name="android:windowExitTransition">@android:transition/slide_left</item>
     </style>
+
+    <style name="Theme.FavMovies.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.FavMovies.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.FavMovies.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

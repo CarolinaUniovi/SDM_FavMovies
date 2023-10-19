@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etxtDuracion;
     private EditText etxtDate;
     private ImageButton btnEdit;
-    private boolean creandoCategoria = false;
+    private final boolean creandoCategoria = false;
     private Pelicula pelicula;
 
     @Override
@@ -79,13 +79,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId()==R.id.Compartir){
-            Conexion conexion=new Conexion(getApplicationContext());
+        if (item.getItemId() == R.id.Compartir) {
+            Conexion conexion = new Conexion(getApplicationContext());
 
-            if (conexion.compruebaConexion()){
+            if (conexion.compruebaConexion()) {
                 compartirPeli();
-            }
-            else
+            } else
                 Toast.makeText(getApplicationContext(), R.string.comprueba_conexion, Toast.LENGTH_LONG).show();
         }
 
@@ -188,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validarCampos()){
+                if (validarCampos()) {
                     guardarPeli();
                     Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
                                     Snackbar.LENGTH_LONG)
@@ -202,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
     private void guardarPeli() {
         pelicula = new Pelicula(etxtTitulo.getText().toString(), etxtArgumento.getText().toString(),
                 listaCategorias.get(spCategoria.getSelectedItemPosition()), etxtDate.getText().toString(),
-                etxtDuracion.getText().toString());
+                etxtDuracion.getText().toString(), "", "", "");
 
         Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
                         Snackbar.LENGTH_LONG)
@@ -249,16 +248,16 @@ public class MainActivity extends AppCompatActivity {
         itSend.putExtra(Intent.EXTRA_SUBJECT,
                 getString(R.string.subject_compartir) + ": " + etxtTitulo.getText().toString());
         itSend.putExtra(Intent.EXTRA_TEXT, getString(R.string.titulo)
-                +": "+etxtTitulo.getText().toString()+"\n"+
+                + ": " + etxtTitulo.getText().toString() + "\n" +
                 getString(R.string.argumento)
-                +": "+etxtArgumento.getText().toString()
+                + ": " + etxtArgumento.getText().toString()
         );
 
         /* iniciamos la actividad */
                 /* puede haber más de una aplicacion a la que hacer un ACTION_SEND,
                    nos sale un ventana que nos permite elegir una.
                    Si no lo pongo y no hay activity disponible, pueda dar un error */
-        Intent shareIntent=Intent.createChooser(itSend, null);
+        Intent shareIntent = Intent.createChooser(itSend, null);
         startActivity(shareIntent);
     }
 }

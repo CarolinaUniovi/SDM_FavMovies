@@ -1,10 +1,9 @@
 package com.example.favmovies;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,8 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.favmovies.modelo.Categoria;
 import com.example.favmovies.modelo.Pelicula;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +38,7 @@ public class MainRecycler extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_recycler);
 
-        rellenarLista();
-        initBtnAddPeli();
+        cargarPeliculas();
 
         listaPeliView = (RecyclerView) findViewById(R.id.recyclerView);
         listaPeliView.setHasFixedSize(true);
@@ -54,14 +55,38 @@ public class MainRecycler extends AppCompatActivity {
         listaPeliView.setAdapter(lpAdapter);
     }
 
-    // Creamos la lista de peliculas
-    private void rellenarLista() {
-        listaPeli = new ArrayList<Pelicula>();
-        Categoria cataccion = new Categoria("Acción", "PelisAccion");
-        Pelicula peli = new Pelicula("Tenet", "Una acción épica que gira en " + "torno al espionaje internacional, los viajes en el tiempo y la evolución, " + "en la que un agente secreto debe prevenir la Tercera Guerra Mundial.", cataccion, "150", "26/8/2020");
-        Pelicula peli2 = new Pelicula("Baby Driver", "La historia sigue a un joven y talentoso conductor conocido como Baby, y que se especializa en fugas.", cataccion, "115", "11/03/2017");
-        listaPeli.add(peli);
-        listaPeli.add(peli2);
+    private void cargarPeliculas() {
+        Pelicula peli;
+        listaPeli = new ArrayList<>();
+        InputStream file = null;
+        InputStreamReader reader = null;
+        BufferedReader bufferedReader = null;
+
+        try {
+            file = getAssets().open("lista_peliculas_url_utf8.csv");
+            reader = new InputStreamReader(file);
+            bufferedReader = new BufferedReader(reader);
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] data = line.split(";");
+                if (data != null && data.length == 8) {
+                    peli = new Pelicula(data[0], data[1], new Categoria(data[2], ""), data[3], data[4],
+                            data[5], data[6], data[7]);
+                    Log.d("cargarPeliculas", peli.toString());
+                    listaPeli.add(peli);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     // Click del item del adapter
@@ -70,25 +95,10 @@ public class MainRecycler extends AppCompatActivity {
         //Toast.makeText(MainActivity.this, "Item Clicked "+user.getId(), Toast.LENGTH_LONG).show();
 
         //Paso el modo de apertura
-        Intent intent = new Intent(MainRecycler.this, MainActivity.class);
+        Intent intent = new Intent(MainRecycler.this, ShowMovie.class);
         intent.putExtra(PELICULA_SELECCIONADA, peli);
 
-        startActivity(intent);
-    }
-
-    private void initBtnAddPeli(){
-        FloatingActionButton btnAddPeli = findViewById(R.id.btnAddPeli);
-        btnAddPeli.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-    }
-    public void crearPeli(View v){
-        Log.d("CrearPeli", "crearPeil");
-        Intent intent=new Intent(MainRecycler.this, MainActivity.class);
-        startActivityForResult(intent, GESTION_ACTIVITY);
-
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 
     @Override
