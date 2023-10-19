@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.favmovies.modelo.Categoria;
 import com.example.favmovies.modelo.Pelicula;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ public class MainRecycler extends AppCompatActivity {
         setContentView(R.layout.activity_main_recycler);
 
         rellenarLista();
+        initBtnAddPeli();
 
         listaPeliView = (RecyclerView) findViewById(R.id.recyclerView);
         listaPeliView.setHasFixedSize(true);
@@ -73,6 +76,14 @@ public class MainRecycler extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void initBtnAddPeli(){
+        FloatingActionButton btnAddPeli = findViewById(R.id.btnAddPeli);
+        btnAddPeli.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+    }
     public void crearPeli(View v){
         Log.d("CrearPeli", "crearPeil");
         Intent intent=new Intent(MainRecycler.this, MainActivity.class);
@@ -104,6 +115,5 @@ public class MainRecycler extends AppCompatActivity {
                 listaPeliView.setAdapter(listaPeliculasAdapter);
             }
         }
-
     }
 }
