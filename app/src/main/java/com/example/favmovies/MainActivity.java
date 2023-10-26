@@ -4,21 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.favmovies.modelo.Categoria;
 import com.example.favmovies.modelo.Pelicula;
-import com.example.favmovies.util.Conexion;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -31,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String CATEGORIA_MODIFICADA = "categoria_modificada";
 
     private final List<Categoria> listaCategorias = new ArrayList<>();
+    private final boolean creandoCategoria = false;
     private Snackbar msgCreaCategoria;
     private Spinner spCategoria;
     private Button btnGuardar;
@@ -39,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText etxtDuracion;
     private EditText etxtDate;
     private ImageButton btnEdit;
-    private final boolean creandoCategoria = false;
     private Pelicula pelicula;
 
     @Override
@@ -77,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
+   /* @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Compartir) {
             Conexion conexion = new Conexion(getApplicationContext());
@@ -89,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     private void introListaSpinner() {
         // Creamos un nuevo array sólo con los nombres de las categorías

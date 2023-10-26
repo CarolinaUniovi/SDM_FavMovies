@@ -3,28 +3,68 @@ package com.example.favmovies;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.favmovies.modelo.Pelicula;
+import com.example.favmovies.ui.ArgumentoFragment;
+import com.example.favmovies.ui.InfoFragment;
+import com.example.favmovies.ui.RepartoFragment;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.squareup.picasso.Picasso;
 
 public class ShowMovie extends AppCompatActivity {
 
-    CollapsingToolbarLayout toolBarLayout;
-    ImageView imagenFondo;
-    TextView categoria;
-    TextView estreno;
-    TextView duracion;
-    TextView argumento;
-    ImageView caratula;
+    private CollapsingToolbarLayout toolBarLayout;
     private Pelicula pelicula;
+    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        /* Cuando se selecciona uno de los botones / ítems*/
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            if (pelicula == null)
+                return false;
+
+            int itemId = item.getItemId();
+
+            /* Según el caso, crearemos un Fragmento u otro */
+            if (itemId == R.id.navigation_argumento) {
+                /* Haciendo uso del FactoryMethod pasándole todos los parámetros necesarios */
+
+                /* Argumento solamente necesita.... El argumento de la película */
+                ArgumentoFragment argumentoFragment = ArgumentoFragment.newInstance
+                        (pelicula.getArgumento());
+                /* ¿Qué estaremos haciendo aquí? */
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, argumentoFragment).commit();
+                return true;
+            }
+
+            if (itemId == R.id.navigation_reparto) {
+                RepartoFragment repartoFragment = RepartoFragment.newInstance
+                        ("", "");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, repartoFragment).commit();
+                return true;
+            }
+
+            if (itemId == R.id.navigation_info) {
+                InfoFragment infoFragment = InfoFragment.newInstance
+                        (pelicula.getCategoria().getNombre(), pelicula.getFecha(),
+                                pelicula.getDuracion(), pelicula.getUrlCaratula());
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commit();
+                return true;
+            }
+            //Si no es nula y no entra... Algo falla.
+            throw new IllegalStateException("Unexpected value: " + item.getItemId());
+        }
+
+    };
+    private BottomNavigationView navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +85,7 @@ public class ShowMovie extends AppCompatActivity {
     }
 
     private void initFab() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,18 +97,14 @@ public class ShowMovie extends AppCompatActivity {
     }
 
     private void getComponents() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        toolBarLayout = findViewById(R.id.toolbar_layout);
         toolBarLayout.setTitle(getTitle());
-        imagenFondo = (ImageView) findViewById(R.id.imgFondo);
 
         // Gestión de los controles que contienen los datos de la película
-        categoria = (TextView) findViewById(R.id.txtCategoria);
-        estreno = (TextView) findViewById(R.id.txtFecha);
-        duracion = (TextView) findViewById(R.id.txtDuracion);
-        argumento = (TextView) findViewById(R.id.txtArgumentoContenido);
-        caratula = (ImageView) findViewById(R.id.imgCaratula);
+        navView = findViewById(R.id.nav_view);
+        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     /**
@@ -81,23 +117,9 @@ public class ShowMovie extends AppCompatActivity {
     }
 
     private void mostrarDatos(Pelicula pelicula) {
-        if (!pelicula.getTitulo().isEmpty()) { //apertura en modo consulta
-            //Actualizar componentes con valores de la pelicula específica
-            String fecha = pelicula.getFecha();
-            toolBarLayout.setTitle(pelicula.getTitulo() + " (" + fecha.substring(fecha.lastIndexOf('/') + 1) + ")");
-            // Imagen de fondo
-            Picasso.get()
-                    .load(pelicula.getUrlFondo()).into(imagenFondo);
+        InfoFragment infoFragment = InfoFragment.newInstance(pelicula.getCategoria().getNombre(), pelicula.getFecha(),
+                pelicula.getDuracion(), pelicula.getUrlCaratula());
 
-
-            categoria.setText(categoria.getText() + pelicula.getCategoria().getNombre());
-            estreno.setText(estreno.getText() + pelicula.getFecha());
-            duracion.setText(duracion.getText() + pelicula.getDuracion());
-            argumento.setText(pelicula.getArgumento());
-
-            // Imagen de la carátula
-            Picasso.get()
-                    .load(pelicula.getUrlCaratula()).into(caratula);
-        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commit();
     }
 }

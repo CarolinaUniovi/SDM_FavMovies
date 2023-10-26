@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/Compartir"
-        android:icon="@android:drawable/ic_menu_share"
-        android:title="@string/Compartir"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/settings"
+        android:title="@string/Ajustes"
+        app:showAsAction="never" />
 </menu>
