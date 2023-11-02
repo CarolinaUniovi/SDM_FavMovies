@@ -49,7 +49,7 @@ public class ShowMovie extends AppCompatActivity {
 
             if (itemId == R.id.navigation_reparto) {
                 RepartoFragment repartoFragment = RepartoFragment.newInstance
-                        ("", "");
+                        ("", "", "");
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, repartoFragment).commit();
                 return true;
             }
