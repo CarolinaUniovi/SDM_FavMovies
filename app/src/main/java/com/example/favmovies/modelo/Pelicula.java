@@ -3,9 +3,23 @@ package com.example.favmovies.modelo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+
+/*
+    La anotación @Entity nos permite indicar que se mapeará en la base de datos como una tabla.
+    Opcionalmente podemos indicar el nombre de la tabla mediante tableName.
+ */
+@Entity(tableName = "peliculas")
 public class Pelicula implements Parcelable {
 
-    public static final Parcelable.Creator<Pelicula> CREATOR = new Parcelable.Creator<Pelicula>() {
+    public static final String URL_IMAGEN_INTERPRETER = "http://image.tmdb.org/t/p/original/";
+
+    public static final Creator<Pelicula> CREATOR = new Creator<Pelicula>() {
         @Override
         public Pelicula createFromParcel(Parcel in) {
             return new Pelicula(in);
@@ -16,28 +30,69 @@ public class Pelicula implements Parcelable {
             return new Pelicula[size];
         }
     };
-    private String titulo;
-    private String argumento;
-    private Categoria categoria;
-    private String duracion;
-    private String fecha;
-    private String urlCaratula;
-    private String urlFondo;
-    private String urlTrailer;
+    /*
+        Con @PrimaryKey indicamos que es id es clave primaria.
+            Es posible hacer lo siguiente: @PrimaryKey(autoGenerate = true)
+        @NonNull es autoexplicativo.
+     */
+    @PrimaryKey
+    @NonNull
+    int id;
+    /*
+        Con @ColumnInfo podemos indicar el nombre de la columna en la tabla
+     */
+    @ColumnInfo(name = "titulo")
+    String titulo;
+    String argumento;
+    /*
+        Esto es lo más importante de este fichero.
+        Categoria es un objeto y Room no almacena referencias a objetos.
 
-    public Pelicula(String titulo, String argumento, Categoria categoria, String duracion, String fecha,
-                    String urlCaratula, String urlImagen, String urlTrailer) {
+        Una posibilidad sería utilizar un conversor:
+            https://developer.android.com/training/data-storage/room/referencing-data?hl=es-419
+
+        Sin embargo, vamos a solucionarlo con @Embebbed
+        Esto añadirá tantas columnas a la tabla películas como atributos tenga Categoría.
+        Mediante prefix indicamos un prefijo, creándose las columnas:
+            categoria_nombre y categoria_descripcion
+
+     */
+    @Embedded(prefix = "categoria_")
+    Categoria categoria;
+    String duracion;
+    String fecha;
+    //EJERCICIO: El nombre de la columna será url_caratula
+    @ColumnInfo(name = "url_caratula")
+    String urlCaratula;
+    //EJERCICIO: El nombre de la columna será url_fondo
+    @ColumnInfo(name = "url_fondo")
+    String urlFondo;
+    //EJERCICIO: El nombre de la columna será url_trailer
+    @ColumnInfo(name = "url_trailer")
+    String urlTrailer;
+
+    //EJERCICIO: Añade la id al constructor, getter, setter, toString y parcelable.
+    public Pelicula(int id, String titulo, String argumento, Categoria categoria, String duracion, String fecha,
+                    String caratula, String fondo, String trailer) {
+        this.id = id;
         this.titulo = titulo;
         this.argumento = argumento;
         this.categoria = categoria;
         this.duracion = duracion;
         this.fecha = fecha;
-        this.urlCaratula = urlCaratula;
-        this.urlFondo = urlImagen;
-        this.urlTrailer = urlTrailer;
+
+        this.urlCaratula = caratula;
+        this.urlFondo = fondo;
+        this.urlTrailer = trailer;
+    }
+
+    //Constructor por defecto para evitar problemas.
+    public Pelicula() {
     }
 
     protected Pelicula(Parcel in) {
+
+        id = in.readInt();
         titulo = in.readString();
         argumento = in.readString();
         categoria = in.readParcelable(Categoria.class.getClassLoader());
@@ -49,20 +104,23 @@ public class Pelicula implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(titulo);
-        dest.writeString(argumento);
-        dest.writeParcelable(categoria, flags);
-        dest.writeString(duracion);
-        dest.writeString(fecha);
-        dest.writeString(urlCaratula);
-        dest.writeString(urlFondo);
-        dest.writeString(urlTrailer);
+    public String toString() {
+        return "Pelicula{" +
+                "id='" + id + '\'' +
+                "titulo='" + titulo + '\'' +
+                ", argumento='" + argumento + '\'' +
+                ", categoria=" + categoria.toString() +
+                ", duracion='" + duracion + '\'' +
+                ", fecha='" + fecha + '\'' +
+                '}';
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -125,21 +183,32 @@ public class Pelicula implements Parcelable {
         return urlTrailer;
     }
 
+
+	/*
+		Interface Parcelable
+	*/
+
     public void setUrlTrailer(String urlTrailer) {
         this.urlTrailer = urlTrailer;
     }
 
     @Override
-    public String toString() {
-        return "Pelicula{" +
-                "titulo='" + titulo + '\'' +
-                ", argumento='" + argumento + '\'' +
-                ", categoria=" + categoria +
-                ", duracion='" + duracion + '\'' +
-                ", fecha='" + fecha + '\'' +
-                ", urlCaratula='" + urlCaratula + '\'' +
-                ", urlImagen='" + urlFondo + '\'' +
-                ", urlTrailer='" + urlTrailer + '\'' +
-                '}';
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(titulo);
+        parcel.writeString(argumento);
+        parcel.writeParcelable(categoria, i);
+        parcel.writeString(duracion);
+        parcel.writeString(fecha);
+        parcel.writeString(urlCaratula);
+        parcel.writeString(urlFondo);
+        parcel.writeString(urlTrailer);
+
+
     }
 }

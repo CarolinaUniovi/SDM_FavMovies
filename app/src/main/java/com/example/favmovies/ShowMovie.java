@@ -1,5 +1,7 @@
 package com.example.favmovies;
 
+import static com.example.favmovies.modelo.Pelicula.URL_IMAGEN_INTERPRETER;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,7 +57,7 @@ public class ShowMovie extends AppCompatActivity {
             if (itemId == R.id.navigation_info) {
                 InfoFragment infoFragment = InfoFragment.newInstance
                         (pelicula.getCategoria().getNombre(), pelicula.getFecha(),
-                                pelicula.getDuracion(), pelicula.getUrlCaratula());
+                                pelicula.getDuracion(), URL_IMAGEN_INTERPRETER + pelicula.getUrlCaratula());
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commit();
                 return true;
             }
@@ -100,7 +102,7 @@ public class ShowMovie extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolBarLayout = findViewById(R.id.toolbar_layout);
-        toolBarLayout.setTitle(getTitle());
+        toolBarLayout.setTitle(pelicula.getTitulo());
 
         // Gestión de los controles que contienen los datos de la película
         navView = findViewById(R.id.nav_view);
@@ -118,7 +120,7 @@ public class ShowMovie extends AppCompatActivity {
 
     private void mostrarDatos(Pelicula pelicula) {
         InfoFragment infoFragment = InfoFragment.newInstance(pelicula.getCategoria().getNombre(), pelicula.getFecha(),
-                pelicula.getDuracion(), pelicula.getUrlCaratula());
+                pelicula.getDuracion(), URL_IMAGEN_INTERPRETER + pelicula.getUrlCaratula());
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commit();
     }

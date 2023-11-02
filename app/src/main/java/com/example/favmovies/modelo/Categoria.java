@@ -18,8 +18,11 @@ public class Categoria implements Parcelable {
             return new Categoria[size];
         }
     };
-    private final String nombre;
-    private final String descripcion;
+    private String nombre;
+    private String descripcion;
+
+    public Categoria() {
+    }
 
     public Categoria(String name, String descripcion) {
         this.descripcion = descripcion;
@@ -46,7 +49,15 @@ public class Categoria implements Parcelable {
         return nombre;
     }
 
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     public String getDescripcion() {
         return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }

@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void guardarPeli() {
-        pelicula = new Pelicula(etxtTitulo.getText().toString(), etxtArgumento.getText().toString(),
+        pelicula = new Pelicula(1, etxtTitulo.getText().toString(), etxtArgumento.getText().toString(),
                 listaCategorias.get(spCategoria.getSelectedItemPosition()), etxtDate.getText().toString(),
                 etxtDuracion.getText().toString(), "", "", "");
 

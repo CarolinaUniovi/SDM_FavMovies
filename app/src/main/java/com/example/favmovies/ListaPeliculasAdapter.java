@@ -1,5 +1,7 @@
 package com.example.favmovies;
 
+import static com.example.favmovies.modelo.Pelicula.URL_IMAGEN_INTERPRETER;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAdapter.PeliculaViewHolder> {
+
 
     private final OnItemClickListener listener;
     private final List<Pelicula> listaPeliculas;
@@ -73,7 +76,7 @@ public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAd
             //fecha.setText(pelicula.getFecha());
             fecha.setText(pelicula.getCategoria().getNombre());
             // cargar imagen
-            Picasso.get().load(pelicula.getUrlCaratula()).into(imagen);
+            Picasso.get().load(URL_IMAGEN_INTERPRETER + pelicula.getUrlCaratula()).into(imagen);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
